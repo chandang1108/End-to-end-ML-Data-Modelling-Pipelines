@@ -155,8 +155,8 @@ df.drop(columns = ['PassengerId','Name','Ticket'],axis=1,inplace=True)
 ````
 ### Target variable distribution
 ```python
-c = df.TARGET_VARIABLE.value_counts(dropna=False)
-p = df.TARGET_VARIABLE.value_counts(dropna=False, normalize=True)
+c = df.Survived.value_counts(dropna=False)
+p = df.Survived.value_counts(dropna=False, normalize=True)
 pd.concat([c,p], axis=1, keys=['counts', '%']).to_excel("Target_Variable_Distribution.xlsx", header=True)
 ```
 ## Creating new interaction variables
@@ -190,11 +190,17 @@ Once you have loaded your data into Python you need to be able to understand it.
 you can understand your data, the better and more accurate the models that you can build.
 The rst step to understanding your data is to use descriptive statistics.
 Helper functions provided on the Pandas Data Frame.
+
  Understand your data using the head() function to look at the rst few rows.
+
  Review the dimensions of your data with the shape property.
+
  Look at the data types for each attribute with the dtypes property.
+
  Review the distribution of your data with the describe() function.
+
  Calculate pairwise correlation between your variables using the corr() function.
+
 ### Descriptive Statistics
 **Univariate Statistics of continuous variables**
 Count,Mean, Median, Standard Deviation, Quartile, Maximum,Minimum, % of missing values, 
@@ -222,10 +228,15 @@ df_univariate[select_metrics].round(2).to_excel(out_file,index = None, header=Tr
 **Weight of Evidence(WOE) and Information Value(IV) Calculation**
 Weight of Evidence (WoE) describes the relationship between a predictor and a binary dependent variable. Information Value (IV) is the measurement of that relationship’s power. Based on its role, IV can be used as a base for attributes selection.
 The weight of evidence tells the predictive power of an independent variable in relation to the dependent variable.
-Since it evolved from credit scoring world, it is generally described as a measure of the separation of good and bad customers. "Bad Customers" refers to the customers who defaulted on a loan. and "Good Customers" refers to the customers who paid back loan.
+Since it evolved from credit scoring world, it is generally described as a measure of the separation of good and bad customers. "Bad Customers" refers to the customers who defaulted on a loan. and "Good 
+Customers" refers to the customers who paid back loan.
+
 ![](https://i.imgur.com/hrTnEXv.jpg)
+
 The concept of WOE in terms of events and non-events. It is calculated by taking the natural logarithm (log to base e) of division of % of non-events and % of events.
+
 ![](https://i.imgur.com/dfosGgc.jpg)
+
 **Weight of Evidence (WOE)**  helps to transform a continuous independent variable into a set of groups or bins based on similarity of dependent variable distribution i.e. number of events and non-events.
 
 **For continuous independent variables**  : First, create bins (categories / groups) for a continuous independent variable and then combine categories with similar WOE values and replace categories with WOE values. Use WOE values rather than input values in your model.
@@ -288,8 +299,10 @@ The main disadvantage of WOE transformation is
 ### Information Value (IV)
 Information value is one of the most useful technique to select important variables in a predictive model. It helps to rank variables on the basis of their importance. The IV is calculated using the following formula :
 ![](https://i.imgur.com/r6ACeFN.jpg)
+
 **IV statistic can be interpreted as follows.**
 ![](https://i.imgur.com/cZx3taD.jpg)
+
 If the IV statistic is:
 
 -   Less than 0.02, then the predictor is not useful for modeling (separating the Goods from the Bads)
@@ -300,6 +313,7 @@ If the IV statistic is:
 
 #### Binning of Continuous/Categorical Variables and generate Weight of Evidence and Information Value
 **create_volume_group()** This User defined function creates bins on the basis of parameter n_bin (number of bins) provided. This algorithm creates almost eqi_volume groups with unique values in groups :
+
 1. It calculates the Average Bin Volume by dividing the total volume of data by number of bins.
 2. It sorts the data based on the value of the continuous variables.
 3. It directly moves to index (I1) having value Average Bin Volume (ABV).
@@ -336,6 +350,7 @@ hence,qcut() is not used in binning the data.
 ### Descriptive statistics with PLOT
 Binning of Continuous/Categorical Variables and generate Rank and Plot of the same
 performs Binning of Continuous/Categorical Variables and generate Rank and Plot of the same.
+
 **plot_stat()** Do below 2 steps.
 1. Line Plot showing Volume% and Event% against Bins/Bins.
 2. Scatter Plot showing Target against Bins/Bins.
@@ -344,7 +359,9 @@ performs Binning of Continuous/Categorical Variables and generate Rank and Plot 
 just on the beside of the binning data of the continuous/categorical Fields. This gives better readability in analyzing the data.
 
  Use the hist() function to create a histogram of each attribute.
+
  Use the plot(kind='box') function to create box and whisker plots of each attribute.
+
  Use the pandas.scatter matrix() function to create pairwise scatter plots of all at-
 tributes.
 
@@ -406,11 +423,16 @@ def plotBarCat(df,feature,target):
     DescribeFloatSkewKurt(df,target)
 ```
 ## Prepare For Modeling by Pre-Processing Data
+
 Sometimes you need to pre-process your data in order to best present the inherent structure of the problem in your data to the modeling algorithms. The scikit-learn library provides two standard idioms for transforming data. Each are useful inherent circumstances: Fit and Multiple Transform and Combined Fit-And-Transform.
+
  Standardize numerical data (e.g. mean of 0 and standard deviation of 1) using the scale
 and center options.
+
  Normalize numerical data (e.g. to a range of 0-1) using the range option.
+
  Explore more advanced feature engineering such as Binarizing.
+
 ### 1. Rescale Data
 Two of the most popular ways to rescale data are data normalization and data standardization.
 **Normalization**: Data normalization in machine learning consists of rescaling the values of all features such that they lie in a range between 0 and 1  and have a maximum length of one. This serves the purpose of equating attributes of different scales.
