@@ -301,6 +301,7 @@ Information value is one of the most useful technique to select important variab
 ![](https://i.imgur.com/r6ACeFN.jpg)
 
 **IV statistic can be interpreted as follows.**
+
 ![](https://i.imgur.com/cZx3taD.jpg)
 
 If the IV statistic is:
