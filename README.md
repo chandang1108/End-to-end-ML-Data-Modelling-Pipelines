@@ -1,7 +1,8 @@
 # End-to-end-ML-Data-Modelling-Pipelines
 ## Define Problem:
 Here we will build a predictive model that answers the question: “what sorts of people were more likely to survive?” using passenger data (ie name, age, gender, socio-economic class, etc).
-## Step 1: Load all required Libraries
+# Part 1: [Importing Necessary Libraries and datasets](https://www.kaggle.com/masumrumi/a-statistical-analysis-ml-workflow-of-titanic#Part-1:-Importing-Necessary-Libraries-and-datasets)
+## 1a. Loading libraries
 ```python
 import pandas as pd
 import numpy as np
@@ -47,9 +48,9 @@ import seaborn as sns
 from sklearn.ensemble import ExtraTreesRegressor
 ```
 
-## Step 2: Loading Data into Dataframe
+## 1b. Loading Datasets
 Machine learning algorithms need data. You can load your own data from business database tables or CSV / excel files.
-* Load data from Netezza DB, using below standard steps.
+* Load data from Netezza DB, using below 2 steps.
 		1 Input password for netezza db connection and encrypt it.
 	```python
 	def PasswordEncrypt():
@@ -98,7 +99,7 @@ Machine learning algorithms need data. You can load your own data from business 
 	print (pyodbc.dataSources())
 	# copy this block to connect to an Insight database
 	# Specify Insight DB to connect to below: DM_RISKS, DM_CUSTOMER, DM_RMS
-	database = 'BI_ANALYTICS'
+	database = ''
 	# ********* Please provide the user ID ********** #
 	user_id = ''
 	home = str(Path.home())
@@ -127,6 +128,7 @@ Machine learning algorithms need data. You can load your own data from business 
 import pandas as pd
 df=pd.read_csv("titanic.csv",header=0)
 ```
+## 1c. A Glimpse of the Datasets
 ### Attribute Information: 
 *PassengerId* : Sequential Id assigned to the Passenger
 *Survived* :    (0/1) 0 => Passenger did not survived ,1 => Passenger survived   <Target Variable>
@@ -140,15 +142,80 @@ df=pd.read_csv("titanic.csv",header=0)
 *Fare* :    Ticket Fare of the Passsenger
 *Cabin* :    Type of Cabin assigned to the passenger
 *Embarked* :  Port of Embarkation (C = Cherbourg; Q = Queenstown; S = Southampton)
+### Types of attributes
+**Categorical:**
+-   **Nominal**(variables that have two or more categories, but which do not have an intrinsic order.)
+    
+    > -   **Cabin**
+    > -   **Embarked**(Port of Embarkation)
+    >     
+    >     ```
+    >         C(Cherbourg)
+    >         Q(Queenstown) 
+    >         S(Southampton)
+    >     ```
+    >     
+    
+-   **Dichotomous**(Nominal variable with only two categories)
+    
+    > -   **Sex**
+    >     
+    >     ```
+    >         Female
+    >         Male
+    >     ```
+    >     
+    
+-   **Ordinal**(variables that have two or more categories just like nominal variables. Only the categories can also be ordered or ranked.)
+    
+    > -   **Pclass**  (A proxy for socio-economic status (SES))
+    >     
+    >     ```
+    >         1(Upper)
+    >         2(Middle) 
+    >         3(Lower)
+    >     ```
+    >     
+    
 
-### Insight
+----------
+
+**Numeric:**
+
+-   **Discrete**
+    
+    > -   **Passenger ID**(Unique identifing # for each passenger)
+    > -   **SibSp**
+    > -   **Parch**
+    > -   **Survived**  (Our outcome or dependent variable)
+    >     
+    >     ```
+    >        0
+    >        1
+    >     ```
+    >     
+    
+-   **Continous**
+    
+    > -   **Age**
+    > -   **Fare**
+    
+
+----------
+
+**Text Variable**
+
+> -   **Ticket**  (Ticket number for passenger.)
+> -   **Name**( Name of the passenger.)
+
+## 1d. Insight of Dataset
 -   **‘Survived’**  is the target variable, which we will predict once our preprocessing of our data is done. So, we retain that column.
 -   Only the columns such as  **‘Age’, ‘Cabin’ and ‘Embarked’**  has missing values.
 -   **‘PassengerId’, ‘Name’ and ‘Ticket’** doesn’t add much value in predicting the target variable.
 -   **‘ParCh’**(Parent/Children) **and ‘SibSp’**(Siblings/Spouse) details are related to family, so we can derive a new column named  **‘Size of the family’**
 -   **‘Sex’, ‘Cabin’ and ‘Embarked’**  are the categorical data that needs to be encoded to numerical values.
 
-## Step 2. Dropping of columns
+## 1e.  Dropping of unnecessary attributes
 In this step, we are going to drop columns with the least priority. The column such as ‘PassengerId’, 'Name' and ‘Ticket’ comes under this category.
 ```python
 df.drop(columns = ['PassengerId','Name','Ticket'],axis=1,inplace=True)
@@ -159,7 +226,7 @@ c = df.Survived.value_counts(dropna=False)
 p = df.Survived.value_counts(dropna=False, normalize=True)
 pd.concat([c,p], axis=1, keys=['counts', '%']).to_excel("Target_Variable_Distribution.xlsx", header=True)
 ```
-## Creating new interaction variables
+### Creating new interaction variables
 ```python
 df['Dependent_ind']='0'
 df['Parent_child_ind']='0'
@@ -176,7 +243,7 @@ df.loc[df['Embarked']=='C','Embarked_ind']='1'
 
 df = df[['Survived','Pclass','Sex','Age','Child_ind','SibSp','Parch','Dependent_ind','Parent_child_ind','Sibling_Spouse_ind','Fare','Cabin','Embarked','Embarked_ind']]
 ````
-## Splitting Continuous and Categorical types variables
+## 1f. Splitting Continuous and Categorical types variables
 ```python
 cols=df.columns
 num_columns=df._get_numeric_data().columns
@@ -185,7 +252,8 @@ print("Total Columns : " + str(len(cols)))
 df_categorical = df[cat_columns]
 df_continuous = df[num_columns]
 ````
-## Step 3: Analyze Data
+# Part 2: Overview and Cleaning the Data
+## Step 2a: Analyze Data
 Once you have loaded your data into Python you need to be able to understand it. The better
 you can understand your data, the better and more accurate the models that you can build.
 The rst step to understanding your data is to use descriptive statistics.
@@ -374,9 +442,7 @@ A fundamental task in many statistical analyses is to characterize the location 
 ```python
 from scipy.stats import skew
 from scipy.stats import kurtosis
-def plotBarCat(df,feature,target):
-    
-    
+def plotBarCat(df,feature,target):   
     
     x0 = df[df[target]==0][feature]
     x1 = df[df[target]==1][feature]
@@ -423,51 +489,7 @@ def plotBarCat(df,feature,target):
     
     DescribeFloatSkewKurt(df,target)
 ```
-## Prepare For Modeling by Pre-Processing Data
-
-Sometimes you need to pre-process your data in order to best present the inherent structure of the problem in your data to the modeling algorithms. The scikit-learn library provides two standard idioms for transforming data. Each are useful inherent circumstances: Fit and Multiple Transform and Combined Fit-And-Transform.
-
- Standardize numerical data (e.g. mean of 0 and standard deviation of 1) using the scale
-and center options.
-
- Normalize numerical data (e.g. to a range of 0-1) using the range option.
-
- Explore more advanced feature engineering such as Binarizing.
-
-### 1. Rescale Data
-Two of the most popular ways to rescale data are data normalization and data standardization.
-**Normalization**: Data normalization in machine learning consists of rescaling the values of all features such that they lie in a range between 0 and 1  and have a maximum length of one. This serves the purpose of equating attributes of different scales.
-
-The following equation allows you to normalize the values of a feature:
-
-![](https://static.packt-cdn.com/products/9781789803556/graphics/B12714_01_15.jpg)
-Here, _zi_ corresponds to the _ith_ normalized value and _x_ represents all values.
-Using the **age** variable that was created in the first exercise of this notebook, normalize the data using the preceding formula and store it in a new variable called **age_normalized**. Print out the top 10 values:
-```python
-age_normalized = (age - age.min())/(age.max()-age.min())
-age_normalized.head(10)
-```
-![](https://static.packt-cdn.com/products/9781789803556/graphics/B12714_01_17.jpg)
-
-**Standardization**: This is a rescaling technique that transforms the  data into a Gaussian distribution with a mean equal to 0 and a standard deviation equal to 1.
-
-One simple way of standardizing a feature is shown in the following equation:
-
-![](https://static.packt-cdn.com/products/9781789803556/graphics/B12714_01_16.jpg)
-Here, _zi_ corresponds to the _ith_ standardized value, and _x_ represents all values.
-```python
-age_standardized = (age - age.mean())/age.std()
-age_standardized.head(10)
-```
-Different than normalization, in standardization, the values distribute normally around zero.
-### 2. Binarize Data (Make Binary): 
-You can transform your data using a binary threshold. All values above the threshold are marked 1 and all equal to or below are marked as 0. It can be useful when you have probabilities that you want to make crisp values.
-```python
-# binarization
-from sklearn.preprocessing import Binarizer
-binarizer  =  Binarizer(threshold=0.0).fit(X)
-binaryX  =  binarizer.transform(X)
-```
+## 2b. Dealing with Missing values
 ### Missing Treatment
 **Number of Missing Values in each column**
 To get the number of missing values in each column, we can use pandas [**_isnull()_**](http://pandas.pydata.org/pandas-docs/version/0.24/reference/api/pandas.DataFrame.isnull.html#pandas.DataFrame.isnull) or [**_notnull()_**](http://pandas.pydata.org/pandas-docs/version/0.24/reference/api/pandas.DataFrame.notnull.html#pandas.DataFrame.notnull) methods. **isnull()** method returns an boolean value **TRUE** when null value is present whereas **notnull()** method returns an boolean value **TRUE**, if there is no null value for every observation in the data. We will add them so that it gives the no of null or non-null values in both cases.
@@ -519,8 +541,6 @@ df['Age'] = df['Age'].fillna(method='bfill')
 df['Age'] = df['Age'].fillna(method='ffill')
 ```
 Replacing null values with mean using **SciKit Learn’s** [_SimpleImputer_](https://scikit-learn.org/stable/modules/generated/sklearn.impute.SimpleImputer.html) class.
-___
-
 ```python
 # Replacing the null values in the Age column with Mean
 from sklearn.impute import SimpleImputerimputer = SimpleImputer(missing_values=np.nan, strategy='mean')
@@ -532,3 +552,152 @@ new_df['Age'].isnull().sum()
 # Replace with Median
 imputer = SimpleImputer(missing_values=np.nan, strategy='median')new_df['Age'] = imputer.fit_transform(new_df[['Age']])
 ```
+## **Categorical Data**
+**Cabin** and **Embarked** columns are of **_Categorical_** datatype. Now let’s see how to handle null values which are of Categorical type. View first few rows of these two columns to know which type of values these two columns comprised of in the dataframe.
+
+```python
+# Handling Missing values in Categorical data
+df[['Cabin','Embarked']].head()
+```
+![](https://miro.medium.com/max/421/1*YuADT0O3fee2MFtZhtnvjA.png)
+Replacing those null values with most frequent value among them.
+```python
+#Number of Missing values in both the columns
+df[['Cabin', 'Embarked']].isnull().sum()
+# Most frequent values in the Embarked column data
+df['Embarked'].value_counts()
+# Replacing the null values with the most frequent value
+df['Embarked'] = df['Embarked'].fillna(df['Embarked'].value_counts().index[0])
+# Replacing null values in Embarked with most frequent value
+imputer = SimpleImputer(missing_values=np.nan, strategy='most_frequent')
+new_df['Embarked'] = imputer.fit_transform(new_df[['Embarked']])
+# Value counts for Embarked column
+new_df['Embarked'].value_counts()
+```
+Another way of handling null values in the column which is of categorical type, is to add an **_Unknown_** class and replace those null values with that class.
+```python
+# Replacing null values with Unknown Class
+df['Cabin'] = df['Cabin'].fillna('Unknown')
+# Value counts for Cabin Column
+df['Cabin'].value_counts()
+# Checking for null values in Cabin column
+df['Cabin'].isnull().sum()
+# Replacing null values in Cabin with Unknown class
+imputer = SimpleImputer(missing_values=np.nan, strategy='constant', fill_value='Unknown')
+new_df['Cabin'] = imputer.fit_transform(new_df[['Cabin']])
+# Checking for null values in the Cabin columnnew_
+df['Cabin'].isnull().sum()
+```
+# Part 3. Visualization and Feature Relations
+Before we dive into finding relations between independent variables and our dependent variable(survivor), let us create some assumptions about how the relations may turn-out among features.
+**Assumptions:**
+-   Gender: More female survived than male
+-   Pclass: Higher socio-economic status passenger survived more than others.
+-   Age: Younger passenger survived more than other passengers.
+-   Fare: Passenger with higher fare survived more that other passengers. This can be quite correlated with Pclass.
+Now, let's see how the features are related to each other by creating some visualizations.
+## 3a. Gender and Survived
+```python
+import seaborn as sns
+pal = {'male':"green", 'female':"Pink"}
+sns.set(style="darkgrid")
+plt.subplots(figsize = (15,8))
+ax = sns.barplot(x = "Sex", 
+                 y = "Survived", 
+                 data=df, 
+                 palette = pal,
+                 linewidth=5,
+                 order = ['female','male'],
+                 capsize = .05,
+
+                )
+
+plt.title("Survived/Non-Survived Passenger Gender Distribution", fontsize = 25,loc = 'center', pad = 40)
+plt.ylabel("% of passenger survived", fontsize = 15, )
+plt.xlabel("Sex",fontsize = 15)
+```
+![](https://www.kaggleusercontent.com/kf/34502374/eyJhbGciOiJkaXIiLCJlbmMiOiJBMTI4Q0JDLUhTMjU2In0..FWSErvF5JrIqNq4M_ZJjHA.zUVO6cbsCcrhaBX2ZI2k2skzMqT7CxPus62WMGsjP9wDak5wWEazHpLkEeJX9zOQtnIvCj73Imj4sLgWRQQRPVOGYqyIJ1KIGHLHB1zijNfj4AsltYONLAIVQimxeIPpzdSlrwbgojLY0aRHVqI-BvWxrKj8G-_kI1P_mVv7og-Rexeh6Tc_1xjkxSFn7Nhv7-svxBG004IvleJff3d6v8ekjKLEtSGG-yzcOvng1xX9TiFTaONTikW-5H80d_ZFjSWyDImeSzDXhUliwduCteq-1W5zFvNsMhfCglBY2sREt6ryOlRgHmddJlLkuAmW86PlpvcDi_l-NE2sNl1_jx4jf1OO6KQKcVzweJ2jft98LczHNWI3t15HSvyAeoQVyIGF8Y3Y0xF2nkQSkQN6Cdj2rXHTFdMTJNZFDua5SKiE6q6eE5R7Y4-tPLuwnof2Y7ZlWmnE3cI1_aX020D7B9YINXNdKMQa1vmJNQXP22NNWcoxNT_sVSVL6uwVsYFuvBN679psyrsMxUc4NGGS-AoSq1EPo359bGaUZ7FzbKNMEiJn0Rx7nIrhKDPtZ2_fFdpkaUlHEw56I6BYYLzn3lecwsoFTOoyMG3gIFYNXW_hPj_rhVemK7xTLUFHeQm9Xn4_WOgPR_kVlor9x4XbKSLizDu1Jymobo89nGmcXW7e54oCOvK7pQSqXegG8KL0.d525aI6-T3k9DlhBKiV7rg/__results___files/__results___63_0.png)
+-   As we suspected, female passengers have survived at a much better rate than male passengers.
+-   It seems about right since females and children were the priority.
+## 3b. Pclass and Survived
+```python
+temp = train[['Pclass', 'Survived', 'PassengerId']].groupby(['Pclass', 'Survived']).count().reset_index()
+temp_df = pd.pivot_table(temp, values = 'PassengerId', index = 'Pclass',columns = 'Survived')
+names = ['No', 'Yes']
+temp_df.columns = names
+r = [0,1,2]
+totals = [i+j for i, j in zip(temp_df['No'], temp_df['Yes'])]
+No_s = [i / j * 100 for i,j in zip(temp_df['No'], totals)]
+Yes_s = [i / j * 100 for i,j in zip(temp_df['Yes'], totals)]
+## Plotting
+plt.subplots(figsize = (15,10))
+barWidth = 0.60
+names = ('Upper', 'Middle', 'Lower')
+# Create green Bars
+plt.bar(r, No_s, color='Red', edgecolor='white', width=barWidth)
+# Create orange Bars
+plt.bar(r, Yes_s, bottom=No_s, color='Green', edgecolor='white', width=barWidth)
+
+ 
+# Custom x axis
+plt.xticks(r, names)
+plt.xlabel("Pclass")
+plt.ylabel('Percentage')
+ 
+# Show graphic
+plt.show()
+```
+![](https://www.kaggleusercontent.com/kf/34502374/eyJhbGciOiJkaXIiLCJlbmMiOiJBMTI4Q0JDLUhTMjU2In0..FWSErvF5JrIqNq4M_ZJjHA.zUVO6cbsCcrhaBX2ZI2k2skzMqT7CxPus62WMGsjP9wDak5wWEazHpLkEeJX9zOQtnIvCj73Imj4sLgWRQQRPVOGYqyIJ1KIGHLHB1zijNfj4AsltYONLAIVQimxeIPpzdSlrwbgojLY0aRHVqI-BvWxrKj8G-_kI1P_mVv7og-Rexeh6Tc_1xjkxSFn7Nhv7-svxBG004IvleJff3d6v8ekjKLEtSGG-yzcOvng1xX9TiFTaONTikW-5H80d_ZFjSWyDImeSzDXhUliwduCteq-1W5zFvNsMhfCglBY2sREt6ryOlRgHmddJlLkuAmW86PlpvcDi_l-NE2sNl1_jx4jf1OO6KQKcVzweJ2jft98LczHNWI3t15HSvyAeoQVyIGF8Y3Y0xF2nkQSkQN6Cdj2rXHTFdMTJNZFDua5SKiE6q6eE5R7Y4-tPLuwnof2Y7ZlWmnE3cI1_aX020D7B9YINXNdKMQa1vmJNQXP22NNWcoxNT_sVSVL6uwVsYFuvBN679psyrsMxUc4NGGS-AoSq1EPo359bGaUZ7FzbKNMEiJn0Rx7nIrhKDPtZ2_fFdpkaUlHEw56I6BYYLzn3lecwsoFTOoyMG3gIFYNXW_hPj_rhVemK7xTLUFHeQm9Xn4_WOgPR_kVlor9x4XbKSLizDu1Jymobo89nGmcXW7e54oCOvK7pQSqXegG8KL0.d525aI6-T3k9DlhBKiV7rg/__results___files/__results___68_0.png)
+It looks like ...
+
+-   ~ 63% first class passenger survived titanic tragedy, while
+-   ~ 48% second class and
+-   ~ only 24% third class passenger survived.
+
+## Prepare For Modeling by Pre-Processing Data
+
+Sometimes you need to pre-process your data in order to best present the inherent structure of the problem in your data to the modeling algorithms. The scikit-learn library provides two standard idioms for transforming data. Each are useful inherent circumstances: Fit and Multiple Transform and Combined Fit-And-Transform.
+
+ Standardize numerical data (e.g. mean of 0 and standard deviation of 1) using the scale
+and center options.
+
+ Normalize numerical data (e.g. to a range of 0-1) using the range option.
+
+ Explore more advanced feature engineering such as Binarizing.
+
+### 1. Rescale Data
+Two of the most popular ways to rescale data are data normalization and data standardization.
+**Normalization**: Data normalization in machine learning consists of rescaling the values of all features such that they lie in a range between 0 and 1  and have a maximum length of one. This serves the purpose of equating attributes of different scales.
+
+The following equation allows you to normalize the values of a feature:
+
+![](https://static.packt-cdn.com/products/9781789803556/graphics/B12714_01_15.jpg)
+Here, _zi_ corresponds to the _ith_ normalized value and _x_ represents all values.
+Using the **age** variable that was created in the first exercise of this notebook, normalize the data using the preceding formula and store it in a new variable called **age_normalized**. Print out the top 10 values:
+```python
+age_normalized = (age - age.min())/(age.max()-age.min())
+age_normalized.head(10)
+```
+![](https://static.packt-cdn.com/products/9781789803556/graphics/B12714_01_17.jpg)
+
+**Standardization**: This is a rescaling technique that transforms the  data into a Gaussian distribution with a mean equal to 0 and a standard deviation equal to 1.
+
+One simple way of standardizing a feature is shown in the following equation:
+
+![](https://static.packt-cdn.com/products/9781789803556/graphics/B12714_01_16.jpg)
+Here, _zi_ corresponds to the _ith_ standardized value, and _x_ represents all values.
+```python
+age_standardized = (age - age.mean())/age.std()
+age_standardized.head(10)
+```
+Different than normalization, in standardization, the values distribute normally around zero.
+### 2. Binarize Data (Make Binary): 
+You can transform your data using a binary threshold. All values above the threshold are marked 1 and all equal to or below are marked as 0. It can be useful when you have probabilities that you want to make crisp values.
+```python
+# binarization
+from sklearn.preprocessing import Binarizer
+binarizer  =  Binarizer(threshold=0.0).fit(X)
+binaryX  =  binarizer.transform(X)
+```
+## Algorithm Evaluation With Re-sampling Methods
+
