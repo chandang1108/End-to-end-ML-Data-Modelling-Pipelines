@@ -1601,3 +1601,67 @@ y_pred = voting_classifier.predict(X_test)
 voting_accy = round(accuracy_score(y_pred, y_test), 3)
 print(voting_accy)
 ```
+##  Gain Chart
+```python
+
+import pickle
+import pandas as pd
+from sklearn import metrics
+import numpy as np
+from sklearn.ensemble import RandomForestClassifier
+
+select_var=['Pclass','Child_ind','Fare','Sex_WOE','Dependent_ind_WOE','Embarked_ind_WOE']
+
+X_train=X_train[select_var]
+X_test=X_test[select_var]
+
+#clf=pd.read_pickle('decision_tree_24feb2020.pkl')
+#clf=pd.read_pickle('random_forest_model_25feb2020_optimized.pkl')
+clf=pd.read_pickle('gbm_model_24feb2020_optimized.pkl')
+
+y_pred = clf.predict(X_train)
+y_train_score = clf.predict_proba(X_train)
+random_forest_model_accuracy = metrics.accuracy_score(y_train,y_pred)
+                
+print("====== Classification Metrics - Development ======")
+print(" Accuracy : "  + str(metrics.accuracy_score(y_train,y_pred)))
+print(" Recall : "  + str(metrics.recall_score(y_train,y_pred)))
+print(" Precision : "  + str(metrics.precision_score(y_train,y_pred)))
+print(" F1_Score : "  + str(metrics.f1_score(y_train,y_pred)))
+print(" Confusion_metrics : "  + str(metrics.confusion_matrix(y_train,y_pred)))
+print(" ")
+
+y_train_score_df = pd.DataFrame(y_train_score, index=range(y_train_score.shape[0]),columns=range(y_train_score.shape[1]))
+y_train_score_df['Actual'] = pd.Series(y_train.values, index=y_train_score_df.index)
+y_train_score_df['Predicted'] = pd.Series(y_pred, index=y_train_score_df.index)
+y_train_score_df['Decile'] = pd.qcut(y_train_score_df[1],10,duplicates='drop')
+
+lift_tbl = pd.DataFrame([y_train_score_df.groupby('Decile')[1].min(),
+                                                 y_train_score_df.groupby('Decile')[1].max(),
+                                                 y_train_score_df[(y_train_score_df['Actual'] == 1)].groupby('Decile')[1].count(),
+                                                 y_train_score_df[(y_train_score_df['Actual'] == 0)].groupby('Decile')[1].count(),
+                                                 y_train_score_df.groupby('Decile')[1].count()]).T
+lift_tbl.columns = ["MIN","MAX","Event","Non-Event","TOTAL"]
+lift_tbl = lift_tbl.sort_values("MIN", ascending=False)
+lift_tbl = lift_tbl.reset_index()
+
+list_vol_pct=[]
+list_event_pct=[]
+
+for i in range(len(lift_tbl.Event)):
+    list_vol_pct.append(lift_tbl['TOTAL'][i]/lift_tbl['TOTAL'].sum())
+    list_event_pct.append(lift_tbl['Event'][i]/lift_tbl['TOTAL'][i])
+
+lift_tbl = pd.concat([lift_tbl,pd.Series(list_vol_pct),pd.Series(list_event_pct)],axis=1)
+
+
+lift_tbl = lift_tbl[["Decile","MIN","MAX","Event","Non-Event","TOTAL",0,1]]        
+lift_tbl = lift_tbl.rename(columns={lift_tbl.columns[len(lift_tbl.keys())-2]: "Volume(%)"})
+lift_tbl = lift_tbl.rename(columns={lift_tbl.columns[len(lift_tbl.keys())-1]: "Event(%)"})
+
+lift_tbl["Cumm_Event"] = lift_tbl["Event"].cumsum()
+lift_tbl["Cumm_Event_Pct"] = lift_tbl["Cumm_Event"] / lift_tbl["Event"].sum()
+#lift_tbl
+lift_tbl.to_excel("Titanic_Lift_Chart_optimized_gbm_25feb2020.xlsx", index = None, header=True)
+lift_tbl
+```
