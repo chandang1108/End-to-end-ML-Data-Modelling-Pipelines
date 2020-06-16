@@ -1682,9 +1682,13 @@ This graph tells you how well is your model segregating responders from non-resp
 What is the maximum lift we could have reached in first decile? From the first table of this article, we know that the total number of responders are 3850. Also the first decile will contains 543 observations. Hence, the maximum lift at first decile could have been 543/3850 ~ 14.1%. Hence, we are quite close to perfection with this model.
 
 Let’s now plot the lift curve. Lift curve is the plot between total lift and %population. Note that for a random model, this always stays flat at 100%. Here is the plot for the case in hand :
+
 ![lift chart](https://www.analyticsvidhya.com/wp-content/uploads/2015/01/Lift.png)
+
 You can also plot decile wise lift with decile number :
+
 ![lift decile](https://www.analyticsvidhya.com/wp-content/uploads/2015/01/Liftdecile.png)
+
 What does this graph tell you? It tells you that our model does well till the 7th decile. Post which every decile will be skewed towards non-responders. Any model with lift @ decile above 100% till minimum 3rd decile and maximum 7th decile is a good model. Else you might consider over sampling first.
 
 Lift / Gain charts are widely used in campaign targeting problems. This tells us till which decile can we target customers for an specific campaign. Also, it tells you how much response do you expect from the new target base.
