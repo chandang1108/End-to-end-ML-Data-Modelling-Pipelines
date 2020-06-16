@@ -1601,7 +1601,18 @@ y_pred = voting_classifier.predict(X_test)
 voting_accy = round(accuracy_score(y_pred, y_test), 3)
 print(voting_accy)
 ```
-##  Gain Chart
+##  Gain Chart and Lift charts
+Gain and Lift chart are mainly concerned to check the rank ordering of the probabilities. Here are the steps to build a Lift/Gain chart:
+
+Step 1 : Calculate probability for each observation
+
+Step 2 : Rank these probabilities in decreasing order.
+
+Step 3 : Build deciles with each group having almost 10% of the observations.
+
+Step 4 : Calculate the response rate at each deciles for Good (Responders) ,Bad (Non-responders) and total.
+
+Cumulative Gain chart is the graph between Cumulative %Right and Cummulative %Population. For the case in hand here is the graph :
 ```python
 
 import pickle
@@ -1665,3 +1676,15 @@ lift_tbl["Cumm_Event_Pct"] = lift_tbl["Cumm_Event"] / lift_tbl["Event"].sum()
 lift_tbl.to_excel("Titanic_Lift_Chart_optimized_gbm_25feb2020.xlsx", index = None, header=True)
 lift_tbl
 ```
+![cumulative gain](https://www.analyticsvidhya.com/wp-content/uploads/2015/01/CumGain.png)
+This graph tells you how well is your model segregating responders from non-responders. For example, the first decile however has 10% of the population, has 14% of responders. This means we have a 140% lift at first decile.
+
+What is the maximum lift we could have reached in first decile? From the first table of this article, we know that the total number of responders are 3850. Also the first decile will contains 543 observations. Hence, the maximum lift at first decile could have been 543/3850 ~ 14.1%. Hence, we are quite close to perfection with this model.
+
+Let’s now plot the lift curve. Lift curve is the plot between total lift and %population. Note that for a random model, this always stays flat at 100%. Here is the plot for the case in hand :
+![lift chart](https://www.analyticsvidhya.com/wp-content/uploads/2015/01/Lift.png)
+You can also plot decile wise lift with decile number :
+![lift decile](https://www.analyticsvidhya.com/wp-content/uploads/2015/01/Liftdecile.png)
+What does this graph tell you? It tells you that our model does well till the 7th decile. Post which every decile will be skewed towards non-responders. Any model with lift @ decile above 100% till minimum 3rd decile and maximum 7th decile is a good model. Else you might consider over sampling first.
+
+Lift / Gain charts are widely used in campaign targeting problems. This tells us till which decile can we target customers for an specific campaign. Also, it tells you how much response do you expect from the new target base.
