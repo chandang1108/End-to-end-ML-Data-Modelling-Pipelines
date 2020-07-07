@@ -322,6 +322,7 @@ sns.heatmap(train.corr(),
 plt.title("Correlations Among Features", y = 1.03,fontsize = 20, pad = 40);
 ```
 ![](https://www.kaggleusercontent.com/kf/34502374/eyJhbGciOiJkaXIiLCJlbmMiOiJBMTI4Q0JDLUhTMjU2In0..FWSErvF5JrIqNq4M_ZJjHA.zUVO6cbsCcrhaBX2ZI2k2skzMqT7CxPus62WMGsjP9wDak5wWEazHpLkEeJX9zOQtnIvCj73Imj4sLgWRQQRPVOGYqyIJ1KIGHLHB1zijNfj4AsltYONLAIVQimxeIPpzdSlrwbgojLY0aRHVqI-BvWxrKj8G-_kI1P_mVv7og-Rexeh6Tc_1xjkxSFn7Nhv7-svxBG004IvleJff3d6v8ekjKLEtSGG-yzcOvng1xX9TiFTaONTikW-5H80d_ZFjSWyDImeSzDXhUliwduCteq-1W5zFvNsMhfCglBY2sREt6ryOlRgHmddJlLkuAmW86PlpvcDi_l-NE2sNl1_jx4jf1OO6KQKcVzweJ2jft98LczHNWI3t15HSvyAeoQVyIGF8Y3Y0xF2nkQSkQN6Cdj2rXHTFdMTJNZFDua5SKiE6q6eE5R7Y4-tPLuwnof2Y7ZlWmnE3cI1_aX020D7B9YINXNdKMQa1vmJNQXP22NNWcoxNT_sVSVL6uwVsYFuvBN679psyrsMxUc4NGGS-AoSq1EPo359bGaUZ7FzbKNMEiJn0Rx7nIrhKDPtZ2_fFdpkaUlHEw56I6BYYLzn3lecwsoFTOoyMG3gIFYNXW_hPj_rhVemK7xTLUFHeQm9Xn4_WOgPR_kVlor9x4XbKSLizDu1Jymobo89nGmcXW7e54oCOvK7pQSqXegG8KL0.d525aI6-T3k9DlhBKiV7rg/__results___files/__results___107_0.png)
+
 **Weight of Evidence(WOE) and Information Value(IV) Calculation**
 Weight of Evidence (WoE) describes the relationship between a predictor and a binary dependent variable. Information Value (IV) is the measurement of that relationship’s power. Based on its role, IV can be used as a base for attributes selection.
 The weight of evidence tells the predictive power of an independent variable in relation to the dependent variable.
@@ -330,9 +331,9 @@ Customers" refers to the customers who paid back loan.
 
 ![](https://i.imgur.com/hrTnEXv.jpg)
 
-The concept of WOE in terms of events and non-events. It is calculated by taking the natural logarithm (log to base e) of division of % of non-events and % of events.
+The concept of WOE in terms of events and non-events. It is calculated by taking the natural logarithm (log to base e) of division of % of events and % of non-events.
 
-![](https://i.imgur.com/dfosGgc.jpg)
+![Weight of evidence and Information Value using Python](https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcTezK8PTbjKcIYovMrRbdNrq6uesa7unc509g&usqp=CAU)
 
 **Weight of Evidence (WOE)**  helps to transform a continuous independent variable into a set of groups or bins based on similarity of dependent variable distribution i.e. number of events and non-events.
 
