@@ -1193,7 +1193,7 @@ feature_importances = pd.DataFrame(dectree_grid.feature_importances_,
 feature_importances.sort_values(by='importance', ascending=False).head(10)
 ```
 ## Random Forest Classifier(RF)
-RF is an ensemble method (combination of many decision trees) which is where the "forest" part comes in. One crucial details about Random Forest is that while using a forest of decision trees, RF model **takes random subsets of the original dataset(bootstrapped)** and **random subsets of the variables(features/columns)**. Using this method, the RF model creates 100's-1000's(the amount can be menually determined) of a wide variety of decision trees. This variety makes the RF model more effective and accurate. We then run each test data point through all of these 100's to 1000's of decision trees or the RF model and take a vote on the output.
+RF is an ensemble method (combination of many decision trees) which is where the "forest" part comes in. One crucial details about Random Forest is that while using a forest of decision trees, RF model **takes random subsets of the original dataset(bootstrapped)** and **random subsets of the variables(features/columns)**. Using this method, the RF model creates 100's-1000's(the amount can be manually determined) of a wide variety of decision trees. This variety makes the RF model more effective and accurate. We then run each test data point through all of these 100's to 1000's of decision trees or the RF model and take a vote on the output.
 ```python
 from sklearn.model_selection import GridSearchCV, StratifiedKFold, StratifiedShuffleSplit
 from sklearn.ensemble import RandomForestClassifier
