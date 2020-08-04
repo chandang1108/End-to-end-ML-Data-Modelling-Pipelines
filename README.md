@@ -1394,9 +1394,8 @@ from sklearn.ensemble import BaggingClassifier
 n_estimators = [10,30,50,70,80,150,160, 170,175,180,185];
 cv = StratifiedShuffleSplit(n_splits=10, test_size=.30, random_state=15)
 
-parameters = {'n_estimators':n_estimators,
-              
-        }
+parameters = {'n_estimators':n_estimators             
+			}
 grid = GridSearchCV(BaggingClassifier(base_estimator= None, ## If None, then the base estimator is a decision tree.
                                       bootstrap_features=False),
                                  param_grid=parameters,
