@@ -50,78 +50,7 @@ from sklearn.ensemble import ExtraTreesRegressor
 
 ## 1b. Loading Datasets
 Machine learning algorithms need data. You can load your own data from business database tables or CSV / excel files.
-* Load data from Netezza DB, using below 2 steps.
-		1 Input password for netezza db connection and encrypt it.
-	```python
-	def PasswordEncrypt():
-    '''
-    Used to encrypt password and store in user home folder.  getpass used to
-    mask password on entry (note: this does not mask on all environments, such
-    as QtConsole)
-    '''
-    import getpass
 
-    myPassword = getpass.getpass('Enter the password you wish to encrypt: ')
-    myPassword = myPassword.encode('utf-8')  # must be bytes
-    
-
-    # for writing text file to home folder
-    from pathlib import Path
-    home = str(Path.home())
-
-    # first, generate a random key, save to file
-    from cryptography.fernet import Fernet
-    key = Fernet.generate_key()
-    with open(home + '/PythonKey.bin', 'wb') as file_object:
-        file_object.write(key)
-
-    # use the key above to encrypt/decrypt your password
-    cipher_suite = Fernet(key)
-    ciphered_text = cipher_suite.encrypt(myPassword)
-
-    # write encrypted password to binary file
-    with open(home + '/PythonPWD.bin', 'wb') as file_object:
-        file_object.write(ciphered_text)
-
-	# execute function
-	PasswordEncrypt()
-	```
-	2.Netezza DB connection creation.
-	```python
-	# Import libraries necessary for this project
-	import numpy as np
-	import pandas as pd
-	from time import time
-	from IPython.display import display # Allows the use of display() for DataFrames
-	#Netezza database connection setup
-	import pyodbc
-	import math
-	print (pyodbc.dataSources())
-	# copy this block to connect to an Insight database
-	# Specify Insight DB to connect to below: DM_RISKS, DM_CUSTOMER, DM_RMS
-	database = ''
-	# ********* Please provide the user ID ********** #
-	user_id = ''
-	home = str(Path.home())
-	   # retreive encrypted password
-	   with open(home + '/PythonPWD.bin', 'rb') as file_object:
-	       for line in file_object:
-	           encryptedpwd = line
-	   # retrieve key
-	   with open(home + '/PythonKey.bin', 'rb') as file_object:
-	       for line in file_object:
-	           key = line
-	   # decrypt
-	   cipher_suite = Fernet(key)
-	   uncipher_text = (cipher_suite.decrypt(encryptedpwd))
-	   password = bytes(uncipher_text).decode('utf-8') #convert to string
-	   # Create connection to DB
-	   db_conn_str = 'DRIVER={NetezzaSQL};SERVER='';DATABASE=' + database + ';UID=' + user_id + ';PWD=' + password
-	   db_connection = pyodbc.connect(db_conn_str)
-	   c = db_connection.cursor()    
-	   return (db_connection, c)
-	cnxn, cursor = connectInsight(database)  
-	```	
 * Data Pull from csv / excel file using CSV.reader() / numpy.loadtxt() / pandas.read csv() function
 * Data Summary [Model Cohort]
 ```python
